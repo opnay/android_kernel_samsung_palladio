@@ -20,6 +20,9 @@
 #include <plat/map-base.h>
 #include <mach/regs-clock.h>
 #include "wm8994_samsung.h"
+#ifdef CONFIG_SND_VOODOO
+#include "wm8994_voodoo.h"
+#endif
 
 /* Debug Feature */
 #define SUBJECT "wm8994_aries.c"
@@ -1661,6 +1664,10 @@ void wm8994_record_main_mic(struct snd_soc_codec *codec)
 					RECORDING_CAM_MAIN);
 		else
 			wm8994_set_codec_gain(codec, RECORDING_MODE, RECORDING_MAIN);
+
+#ifdef CONFIG_SND_VOODOO_RECORD_PRESETS
+	voodoo_hook_record_main_mic();
+#endif
 	} else {
 		val = wm8994_read(codec, WM8994_AIF1_MASTER_SLAVE);
 		val |= (WM8994_AIF1_MSTR | WM8994_AIF1_CLK_FRC | WM8994_AIF1_LRCLK_FRC);
