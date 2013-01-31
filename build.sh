@@ -2,7 +2,7 @@ export ARCH=arm
 export CROSS_COMPILE=/home/diadust/android/toolchain/arm-eabi-4.4.3/bin/arm-eabi-
 KERNDIR=/home/diadust/gb1/kernel
 JOBN=16
-export KBUILD_BUILD_VERSION="${VERSION}#Beta01"
+export KBUILD_BUILD_VERSION="${VERSION}#v1.0"
 INITRAM_DIR=$KERNDIR/initramfs
 INITRAM_ORIG=$KERNDIR/../initramfs/KRKPH
 
@@ -26,6 +26,7 @@ make distclean
 rm -rf $INITRAM_DIR/*
 echo "----------------------------------------------------------------------------------------------------------CONFIG"
 cp -R $INITRAM_ORIG/* $INITRAM_DIR/
+find $INITRAM_DIR -name "*~" -exec rm -f {} \;
 make $1
 make menuconfig
 echo "----------------------------------------------------------------------------------------------------------BUILD"
