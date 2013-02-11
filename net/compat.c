@@ -391,7 +391,7 @@ asmlinkage long compat_sys_setsockopt(int fd, int level, int optname,
 	int err;
 	struct socket *sock = sockfd_lookup(fd, &err);
 
-	if (sock)
+	if (sock !=NULL)
 {
 		err = security_socket_setsockopt(sock,level,optname);
 		if (err) {
@@ -504,7 +504,7 @@ asmlinkage long compat_sys_getsockopt(int fd, int level, int optname,
 	int err;
 	struct socket *sock = sockfd_lookup(fd, &err);
 
-	if (sock) {
+	if (sock !=NULL) {
 		err = security_socket_getsockopt(sock, level, optname);
 		if (err) {
 			sockfd_put(sock);

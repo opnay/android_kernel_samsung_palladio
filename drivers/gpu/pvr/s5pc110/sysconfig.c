@@ -44,23 +44,13 @@
 #define REAL_HARDWARE 1
 #define SGX540_BASEADDR 0xf3000000
 #define MAPPING_SIZE 0x10000
-//#define IRQ_3D 106
 #define SGX540_IRQ IRQ_3D
-//static struct resource		*mem;
-//static void __iomem		*io;
 
 #define SYS_SGX_CLOCK_SPEED					(230000000)
-
-#if 0
-#define SYS_SGX_HWRECOVERY_TIMEOUT_FREQ		(100) // 10ms (100hz)
-#define SYS_SGX_PDS_TIMER_FREQ				(1000) // 1ms (1000hz)
-#define SYS_SGX_ACTIVE_POWER_LATENCY_MS		(500)
-#else
 #define SYS_SGX_HWRECOVERY_TIMEOUT_FREQ		(100) // 10ms (100hz)
 #define SYS_SGX_PDS_TIMER_FREQ				(1000) // 1ms (1000hz)
 #ifndef SYS_SGX_ACTIVE_POWER_LATENCY_MS
 #define SYS_SGX_ACTIVE_POWER_LATENCY_MS		(500)
-#endif
 #endif
 
 typedef struct _SYS_SPECIFIC_DATA_TAG_
@@ -118,28 +108,15 @@ static PVRSRV_ERROR DisableSGXClocks(void)
 
 static PVRSRV_ERROR SysLocateDevices(SYS_DATA *psSysData)
 {
-//	PVRSRV_ERROR eError;
-//	IMG_CPU_PHYADDR sCpuPAddr;
 
 	PVR_UNREFERENCED_PARAMETER(psSysData);
 
 
-#if 0
-	
-	gsSGXDeviceMap.ui32Flags = 0x0;
-	sCpuPAddr.uiAddr = SGX540_BASEADDR;
-	gsSGXDeviceMap.sRegsCpuPBase = sCpuPAddr;
-	gsSGXDeviceMap.sRegsSysPBase = SysCpuPAddrToSysPAddr(gsSGXDeviceMap.sRegsCpuPBase);;
-	gsSGXDeviceMap.ui32RegsSize = SGX_REG_SIZE;
-//	gsSGXDeviceMap.pvRegsCpuVBase = (IMG_CPU_VIRTADDR)io;
-
-#else
 
 	gsSGXDeviceMap.sRegsSysPBase.uiAddr = SGX540_BASEADDR;
 	gsSGXDeviceMap.sRegsCpuPBase = SysSysPAddrToCpuPAddr(gsSGXDeviceMap.sRegsSysPBase);
 	gsSGXDeviceMap.ui32RegsSize = SGX_REG_SIZE;
 	gsSGXDeviceMap.ui32IRQ = SGX540_IRQ;
-#endif
 
 
 #if defined(SGX_FEATURE_HOST_PORT)
@@ -199,21 +176,6 @@ PVRSRV_ERROR SysInitialise()
 		gpsSysData = IMG_NULL;
 		return eError;
 	}
-#if defined(SGX540)
-//printk("SGX540 defined\n");
-#endif	
-//printk("SGX_CORE_REV=%d\n",SGX_CORE_REV);
-#if defined(SGX_FEATURE_SYSTEM_CACHE)
-//printk("SGX_FEATURE_SYSTEM_CACHE defined!!!!!!!!!!!!!!\n");
-#if defined(FIX_HW_BRN_25659)
-//printk("FIX_HW_BRN_25659 defined!!!!!!!!!!!!!!\n");
-
-#endif
-#endif
-
-#if defined(SGX_BYPASS_SYSTEM_CACHE)
-//	printk("SGX_BYPASS_SYSTEM_CACHE defined!!!!!!!!!!!!!!!\n");
-#endif
 
 	gpsSysData->pvSysSpecificData = (IMG_PVOID)&gsSysSpecificData;
 	OSMemSet(&gsSGXDeviceMap, 0, sizeof(SGX_DEVICE_MAP));
@@ -459,16 +421,11 @@ PVRSRV_ERROR SysFinalise(IMG_VOID)
 	}
 	gsSysSpecificData.ui32SysSpecificData |= SYS_SPECIFIC_DATA_ENABLE_LISR;
 	
-//	SysEnableInterrupts(gpsSysData);
 	gsSysSpecificData.ui32SysSpecificData |= SYS_SPECIFIC_DATA_ENABLE_IRQ;
 #endif 
 
 	
-#if 0
-	gpsSysData->pszVersionString = SysCreateVersionString(gsSGXDeviceMap.sRegsCpuPBase);
-#else
 	gpsSysData->pszVersionString=version_string;
-#endif
 	if (!gpsSysData->pszVersionString)
 	{
 		PVR_DPF((PVR_DBG_ERROR,"SysFinalise: Failed to create a system version string"));
@@ -482,7 +439,6 @@ PVRSRV_ERROR SysFinalise(IMG_VOID)
 	
 	DisableSGXClocks();
 #endif	
-//	gsSysSpecificData.bSGXInitComplete= IMG_TRUE; don't know
 	
 	return PVRSRV_OK;
 }
@@ -506,10 +462,6 @@ PVRSRV_ERROR SysDeinitialise (SYS_DATA *psSysData)
 
 	psSysSpecData = (SYS_SPECIFIC_DATA *) psSysData->pvSysSpecificData;
 
-	if (psSysSpecData->ui32SysSpecificData & SYS_SPECIFIC_DATA_ENABLE_IRQ) 	
-	{
-//		SysDisableInterrupts(psSysData);
-	}
 	if (psSysSpecData->ui32SysSpecificData & SYS_SPECIFIC_DATA_ENABLE_LISR)
 	{	
 		eError = OSUninstallSystemLISR(psSysData);
@@ -548,11 +500,7 @@ PVRSRV_ERROR SysDeinitialise (SYS_DATA *psSysData)
 	SysDeinitialiseCommon(gpsSysData);
 
 
-	#if REAL_HARDWARE
-//	iounmap(io);
-//	release_resource(mem);
-//	kfree(mem);
-	#else
+	#if !REAL_HARDWARE
 	
 	OSBaseFreeContigMemory(SGX_REG_SIZE, gsSGXRegsCPUVAddr, gsSGXDeviceMap.sRegsCpuPBase);
 	OSBaseFreeContigMemory(SGX_SP_SIZE, gsSGXSPCPUVAddr, gsSGXDeviceMap.sSPCpuPBase);
@@ -676,7 +624,6 @@ IMG_UINT32 SysGetInterruptSource(SYS_DATA* psSysData,
 	return 0xFFFFFFFF;
 #else
 	
-	//return psDeviceNode->ui32SOCInterruptBit;
 	return 0x1;
 #endif
 }
@@ -688,11 +635,6 @@ IMG_VOID SysClearInterrupts(SYS_DATA* psSysData, IMG_UINT32 ui32ClearBits)
 	PVR_UNREFERENCED_PARAMETER(psSysData);
 	PVR_UNREFERENCED_PARAMETER(ui32ClearBits);
 
-	//printk("SysClearInterrupts\n");
-#if !defined(NO_HARDWARE)
-//	OSReadHWReg(((PVRSRV_SGXDEV_INFO *)gpsSGXDevNode->pvDevice)->pvRegsBaseKM,
-//										EUR_CR_EVENT_HOST_CLEAR);	//do something here
-#endif
 	
 }
 
