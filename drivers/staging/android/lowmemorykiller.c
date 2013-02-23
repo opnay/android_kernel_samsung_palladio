@@ -79,7 +79,7 @@ task_notify_func(struct notifier_block *self, unsigned long val, void *data)
 	return NOTIFY_OK;
 }
 
-static int lowmem_shrink(struct shrinker *s, int nr_to_scan, gfp_t gfp_mask)
+static int lowmem_shrink(int nr_to_scan, gfp_t gfp_mask)
 {
 	struct task_struct *p;
 	struct task_struct *selected = NULL;
@@ -110,14 +110,12 @@ static int lowmem_shrink(struct shrinker *s, int nr_to_scan, gfp_t gfp_mask)
 	if (lowmem_minfree_size < array_size)
 		array_size = lowmem_minfree_size;
 	for (i = 0; i < array_size; i++) {
-		if ((other_free + other_file) < lowmem_minfree[i])
-		{
+		if (other_free < lowmem_minfree[i] &&
+		    other_file < lowmem_minfree[i]) {
 			min_adj = lowmem_adj[i];
 			break;
 		}
 	}
-	if (min_adj == OOM_ADJUST_MAX + 1)
-		return 0;
 	if (nr_to_scan > 0)
 		lowmem_print(3, "lowmem_shrink %d, %x, ofree %d %d, ma %d\n",
 			     nr_to_scan, gfp_mask, other_free, other_file,
@@ -126,7 +124,7 @@ static int lowmem_shrink(struct shrinker *s, int nr_to_scan, gfp_t gfp_mask)
 		global_page_state(NR_ACTIVE_FILE) +
 		global_page_state(NR_INACTIVE_ANON) +
 		global_page_state(NR_INACTIVE_FILE);
-	if (nr_to_scan <= 0)
+	if (nr_to_scan <= 0 || min_adj == OOM_ADJUST_MAX + 1)
 	{
 		lowmem_print(5, "lowmem_shrink %d, %x, return %d\n",
 			     nr_to_scan, gfp_mask, rem);
@@ -178,8 +176,6 @@ static int lowmem_shrink(struct shrinker *s, int nr_to_scan, gfp_t gfp_mask)
 		force_sig(SIGKILL, selected);
 		rem -= selected_tasksize;
 	}
-	else
-		rem = -1;
 	lowmem_print(4, "lowmem_shrink %d, %x, return %d\n",
 		     nr_to_scan, gfp_mask, rem);
 	read_unlock(&tasklist_lock);
