@@ -523,6 +523,9 @@ else
 include/config/auto.conf: ;
 endif # $(dot-config)
 
+# This warning generated too much noise in a regular build.
+KBUILD_CFLAGS += $(call cc-option, -Wno-unused-but-set-variable)
+
 # The all: target is the default when no target is given on the
 # command line.
 # This allow a user to issue only 'make' to build a kernel including modules

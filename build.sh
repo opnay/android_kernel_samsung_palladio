@@ -1,8 +1,8 @@
 export ARCH=arm
-export CROSS_COMPILE=/home/diadust/android/toolchain/arm-eabi-4.4.3/bin/arm-eabi-
+export CROSS_COMPILE=/home/diadust/android/toolchain/gcc-arm-none-eabi-4_6-2012q2/bin/arm-none-eabi-
 KERNDIR=/home/diadust/gb1/kernel
 JOBN=16
-export KBUILD_BUILD_VERSION="v1.2_Final"
+export KBUILD_BUILD_VERSION="Test"
 INITRAM_DIR=$KERNDIR/initramfs
 INITRAM_ORIG=$KERNDIR/../initramfs/KRKPH
 
