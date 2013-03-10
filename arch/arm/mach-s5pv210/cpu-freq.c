@@ -134,7 +134,7 @@ static struct s3c_freq clk_info[] = {
 		.hclk_dsys  = 166750,
 		.pclk_dsys  = 83375,
 	},
-	[L1] = {	/* L0: 1GHz */
+	[L1] = {	/* L1: 1GHz */
 		.fclk       = 1000000,
 		.armclk     = 1000000,
 		.hclk_tns   = 0,
@@ -145,7 +145,7 @@ static struct s3c_freq clk_info[] = {
 		.hclk_dsys  = 166750,
 		.pclk_dsys  = 83375,
 	},
-	[L2] = {	/* L1: 800MHz */
+	[L2] = {	/* L2: 800MHz */
 		.fclk       = 800000,
 		.armclk     = 800000,
 		.hclk_tns   = 0,
@@ -156,7 +156,7 @@ static struct s3c_freq clk_info[] = {
 		.hclk_dsys  = 166750,
 		.pclk_dsys  = 83375,
 	},
-	[L3] = {	/* L2: 400MHz */
+	[L3] = {	/* L3: 400MHz */
 		.fclk       = 800000,
 		.armclk     = 400000,
 		.hclk_tns   = 0,
@@ -167,7 +167,7 @@ static struct s3c_freq clk_info[] = {
 		.hclk_dsys  = 166750,
 		.pclk_dsys  = 83375,
 	},
-	[L4] = {	/* L3: 200MHz */
+	[L4] = {	/* L4: 200MHz */
 		.fclk       = 800000,
 		.armclk     = 200000,
 		.hclk_tns   = 0,
@@ -178,7 +178,7 @@ static struct s3c_freq clk_info[] = {
 		.hclk_dsys  = 166750,
 		.pclk_dsys  = 83375,
 	},
-	[L5] = {	/* L4: 100MHz */
+	[L5] = {	/* L5: 100MHz */
 		.fclk       = 800000,
 		.armclk     = 100000,
 		.hclk_tns   = 0,
