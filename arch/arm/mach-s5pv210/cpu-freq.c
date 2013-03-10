@@ -426,8 +426,8 @@ static int s5pv210_cpufreq_target(struct cpufreq_policy *policy,
 
 	mutex_lock(&set_freq_lock);
 
-	cpufreq_debug_printk(CPUFREQ_DEBUG_DRIVER, KERN_INFO,
-			"cpufreq: Entering for %dkHz\n", target_freq);
+//	cpufreq_debug_printk(CPUFREQ_DEBUG_DRIVER, KERN_INFO,
+//			"cpufreq: Entering for %dkHz\n", target_freq);
 
 	if ((relation & ENABLE_FURTHER_CPUFREQ) &&
 			(relation & DISABLE_FURTHER_CPUFREQ)) {
@@ -667,8 +667,8 @@ static int s5pv210_cpufreq_target(struct cpufreq_policy *policy,
 	}
 
 	memcpy(&s3c_freqs.old, &s3c_freqs.new, sizeof(struct s3c_freq));
-	cpufreq_debug_printk(CPUFREQ_DEBUG_DRIVER, KERN_INFO,
-			"cpufreq: Performance changed[L%d]\n", index);
+//	cpufreq_debug_printk(CPUFREQ_DEBUG_DRIVER, KERN_INFO,
+//			"cpufreq: Performance changed[L%d]\n", index);
 	previous_arm_volt = dvs_conf[index].arm_volt;
 
 	if (first_run)
