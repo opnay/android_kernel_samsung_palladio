@@ -1,5 +1,5 @@
 export ARCH=arm
-export CROSS_COMPILE=/home/diadust/android/toolchain/gcc-arm-none-eabi-4_6-2012q2/bin/arm-none-eabi-
+export CROSS_COMPILE=/home/diadust/android/toolchain/android-toolchain-eabi-4.7/bin/arm-eabi-
 KERNDIR=/home/diadust/gb1/kernel
 JOBN=16
 export KBUILD_BUILD_VERSION="Test"
