@@ -931,7 +931,7 @@ static int __init cpufreq_gov_dbs_init(void)
 	destroy_workqueue(klazy_wq);
 
 #ifdef CONFIG_HAS_EARLYSUSPEND
-    resitrer_early_suspend(&lazy_suspend);
+    register_early_suspend(&lazy_suspend);
 #endif
 
     return err;
