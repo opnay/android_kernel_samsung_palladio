@@ -1,38 +1,39 @@
-KERDIR=/home/diadust/gb1/kernel
-export CROSS_COMPILER=/home/diadust/android/toolchain/arm-eabi-4.4.3/bin/arm-eabi-
 export ARCH=arm
-INITRAM_DIR=$KERDIR/initramfs
-INITRAM_ORIG=$KERDIR/../initramfs/KRKPH
+export CROSS_COMPILE=/home/diadust/toolchain/android-toolchain-eabi-4.8/bin/arm-eabi-
+KERNDIR=/home/diadust/project/palladio
+INITRAM_DIR=$KERNDIR/initramfs/initramfs
+INITRAM_ORIG=$KERNDIR/initramfs/KPH
 JOBN=16
-export KBUILD_BUILD_VERSION="${VERSION}#Beta01"
+
+export KBUILD_BUILD_VERSION="${VERSION}#Immortal+_Init"
 export LOCALVERSION=""
 
-if [[ -z $1 ]]
+DEFCONFIGS=$1
+if [[ ! -e "$KERNDIR/arch/arm/configs/$DEFCONFIGS" ]]
 then
-	echo "No configuration file defined"
+	echo "Configuration file $DEFCONFIGS don't exists"
+	echo "Usage :"
+	echo "./build.sh [ Defconfig file name ]"
 	exit 1
-
-else 
-	if [[ ! -e "$KERDIR/arch/arm/configs/$1" ]]
-	then
-		echo "Configuration file $1 don't exists"
-		exit 1
-	fi
 fi
 
-echo "---------------------------------------------------------------------------------------CLEAN"
-make distclean
-rm -rf $INITRAM_DIR/*
-echo "---------------------------------------------------------------------------------------CONFIG"
+echo "----------------------------------------------------------------------------------------------------------CLEAN"
+rm -Rf $INITRAM_DIR && mkdir $INITRAM_DIR
 cp -R $INITRAM_ORIG/* $INITRAM_DIR/
-make $1
+# 임시파일 삭제
+# find $INITRAM_DIR -name "*~" -exec rm -f {} \;
+make distclean
+echo "----------------------------------------------------------------------------------------------------------CONFIG"
+make $DEFCONFIGS
 make menuconfig
-echo "---------------------------------------------------------------------------------------MAKE"
+echo "----------------------------------------------------------------------------------------------------------BUILD"
 make -j$JOBN
-echo "---------------------------------------------------------------------------------------COPY MODULES"
-find . -name "*.ko" ! -path "*$INITRAM_DIR*" -exec echo {} \;
-find . -name "*.ko" ! -path "*$INITRAM_DIR*" -exec cp {} $INITRAM_DIR/lib/modules/  \;
-echo "---------------------------------------------------------------------------------------REMAKE"
+echo "----------------------------------------------------------------------------------------------------------MODULES"
+find . -name "*.ko" -exec echo {} \;
+find . -name "*.ko" -exec cp {} $INITRAM_DIR/lib/modules/  \;
+echo "----------------------------------------------------------------------------------------------------------REBUILD"
 make -j$JOBN
-cp $KERDIR/arch/arm/boot/zImage $KERDIR/zImage
 
+cp $KERNDIR/arch/arm/boot/zImage $KERNDIR/zImage
+
+echo " Build Complete "
